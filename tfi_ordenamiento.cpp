@@ -106,10 +106,10 @@ void ejecutarMetodo(int v[], int n, int codMetodo) {
         case 0:
             bubbleSort(v, n);
             break;
+        case 1:
             selectionSort(v, n);
             break;
         case 2:
-        case 1:
             insertionSort(v, n);
             break;
         case 3:
