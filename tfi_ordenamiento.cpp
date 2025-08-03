@@ -305,17 +305,20 @@ void quickSortRecursion(int v[], int inicio, int fin, int &comparaciones, int &i
 }
 
 int quickSortParticion(int v[], int inicio, int fin, int &comparaciones, int &intercambios) {
-	int pivote = v[fin]; // Utilizamos el ultimo elemento del arreglo como nuestro pivote.
+	int pivote = v[fin]; // Utilizamos el ultimo elemento del arreglo como nuestro pivote. Idealmente deberiamos generarlo de forma aleatoria.
 	int i = inicio; // Indice que utilizaremos para ubicar el valor pivote al final de la particion.
 	
 	for (int j = i; j < fin; j++) {
+		comparaciones++;
 		if(v[j] <= pivote) { // Si el valor al que apuntamos en v[j] es menor al pivote, intercambiamos ya que debe estar a la izquierda.
 			intercambiar(v, i, j);
 			i++;
+			intercambios++;
 		}
 	}
 	
-	intercambiar(v, i, fin); // Finalmente ubicamos el pivote en la posicion v[i], y moviendo el elemento de v[i] al final.
+	intercambiar(v, i, fin); // Colocamos el pivote en la posicion v[i], de forma que todos los elementos menores queden a su izquierda, y los mayores a su derecha.
+	intercambios++;
 	return i; // Devolvemos la posicion del pivote.
 }
 
