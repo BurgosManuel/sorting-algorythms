@@ -78,7 +78,7 @@ int elegirMetodo() {
     	if(opcion < 0 || opcion > 4){
 			printf("El metodo elegido no existe, seleccione uno de la lista.\n");
 		}
-	} while(opcion < 1 || opcion > 4);
+	} while(opcion < 0 || opcion > 4);
     
 	return opcion;
 }
@@ -106,14 +106,54 @@ void ejecutarMetodo(int v[], int n, int codMetodo) {
 }
 
 void bubbleSort(int v[], int n) {
-	printf("Ordenado con bubbleSort\n");
+	int intercambios = 0, comparaciones = 0;
+	for (int i = 0; i < n-1; i++) { // Iteramos hasta el penultimo valor, ya que debemos comparar con i+1.
+		int desordenado = 0;
+		for (int j = 0; j < n-i-1; j++) { // Usando ifs anidados, evitamos volver a validar valores que ya estan ordenados.
+			if(v[j] > v[j+1]) {			
+				int aux = v[j];
+				v[j] = v[j+1];
+				v[j+1] = aux;
+				
+				desordenado = 1;
+				comparaciones++;
+				intercambios += 2;
+			}
+		}
+		if (desordenado = 0) {
+			break;
+		}
+	}
+	printf("El vector ordenado es: \n");
+	imprimirVector(v, n);
+	printf("Cantidad de comparaciones: %d.\n", comparaciones);
+	printf("Cantidad de intercambios: %d.\n", intercambios);
 }
+
 void selectionSort(int v[], int n) {
-	printf("Ordenado con selectionSort\n");
+	int comparaciones = 0, intercambios = 0;
+	for (int i = 0; i < n - 1; i++) {
+		for (int j = i + 1; j < n; j++) {
+			if (v[j] < v[min]) { // Comparamos el elemento actual con el presente en el indice menor y reemplazamos.
+				min = j;
+			}
+		}
+		
+		if(min != i) { // Verificamos si corresponde hacer el intercambio
+			aux = v[i];
+			v[i] = v[min];
+			v[min] = aux;
+		}
+	}
+	
+	printf("El vector ordenado es: \n");
+	imprimirVector(v, n);
 }
+
 void insertionSort(int v[], int n) {
 	printf("Ordenado con insertionSort\n");
 }
+	
 void mergeSort(int v[], int n) {
 	printf("Ordenado con mergeSort\n");
 }
