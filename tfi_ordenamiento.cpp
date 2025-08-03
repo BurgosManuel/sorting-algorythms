@@ -220,13 +220,15 @@ void mergeSort(int v[], int n) {
 	mergeSortRecursion(v, n, comparaciones, intercambios);
 	imprimirOrdenado(v, n, comparaciones, intercambios);	
 }
+
 void mergeSortRecursion(int v[], int n, int &comparaciones, int &intercambios) {
 	if(n < 2) { // Si tenemos un vector vacio o con un solo elemento, no necesita ordenarse.
 		return;
 	}
 	
-	int medio = n / 2; // Obtenemos el elemento medio del vector, si n es impar, el indice se redondea para abajo. EJ: 5/2 = 2.
+	int medio = n / 2; // Obtenemos el indice del elemento medio del vector, si n es impar, el indice se redondea para abajo. EJ: 5/2 = 2.
 	// Generamos dos vectores, donde copiaremos los valores a la izquierda y a la derecha respecto al elemento medio del vector original.
+	// EJ: n = 5; medio = 5/2 = 2; izq[2]; der[5 - 2] -> der[3];
 	int izq[medio];
 	int der[n - medio];
 	
@@ -260,19 +262,20 @@ void mergeSortUnion(int v[], int n, int izq[], int der[], int &comparaciones, in
 	// Colocamos el elemento menor en la posicion v[k].
 	while (i < nIzq && j < nDer) {
 		comparaciones++;
-		if(izq[i] <= der[j]) {
+		if(izq[i] <= der[j]) { // Si el elemento en izq[] es menor, lo ubicamos en la posicion v[k] y continuamos con el siguiente elemento en el vector.
 			v[k] = izq[i];
 			intercambios++;
 			i++;
-		} else {
+		} else { // Si el elemento en der[] es menor, lo ubicamos en la posicion v[k] y continuamos con el siguiente elemento en el vector.
 			v[k] = der[j];
 			intercambios++;
 			j++;
 		}
+		
 		k++;
 	}
 	
-	// Agregamos los elementos que hayan sobrado de la iteracion anterior al vector.
+	// Si (i < nIzq && j < nDer) no se cumple, alguno de los vectores queda con elementos, aqui sumamos el descarte a v[].
 	while (i < nIzq) {
 		v[k] = izq[i];
 		i++;
@@ -295,9 +298,9 @@ void quickSort(int v[], int n) {
 }
 
 void quickSortRecursion(int v[], int inicio, int fin, int &comparaciones, int &intercambios) {
-	// Solo ejecutamos si hay varios elementos en el arreglo.
-	if(inicio < fin) {	
-		int pivote = quickSortParticion(v, inicio, fin, comparaciones, intercambios);
+	// Solo ejecutamos si hay varios elementos en el arreglo. EJ: n = 1; inicio = 0; fin = n - 1 = 0; (inicio < fin) no se cumple.
+	if(inicio < fin) {
+		int pivote = quickSortParticion(v, inicio, fin, comparaciones, intercambios); // Obtenemos el indice del elemento pivote luego de la particion.
 		
 		quickSortRecursion(v, inicio, pivote - 1, comparaciones, intercambios); // Ordenamos la parte izquierda de forma recursiva.
 		quickSortRecursion(v, pivote + 1, fin, comparaciones, intercambios);  // Ordenamos la parte derecha de forma recursiva.
@@ -305,12 +308,12 @@ void quickSortRecursion(int v[], int inicio, int fin, int &comparaciones, int &i
 }
 
 int quickSortParticion(int v[], int inicio, int fin, int &comparaciones, int &intercambios) {
-	int pivote = v[fin]; // Utilizamos el ultimo elemento del arreglo como nuestro pivote. Idealmente deberiamos generarlo de forma aleatoria.
+	int pivote = v[fin]; // Utilizamos el ultimo elemento del arreglo como nuestro pivote. Idealmente deberiamos obtenerlo de forma aleatoria.
 	int i = inicio; // Indice que utilizaremos para ubicar el valor pivote al final de la particion.
 	
 	for (int j = i; j < fin; j++) {
 		comparaciones++;
-		if(v[j] <= pivote) { // Si el valor al que apuntamos en v[j] es menor al pivote, intercambiamos ya que debe estar a la izquierda.
+		if(v[j] <= pivote) { // Si el valor al que apuntamos en v[j] es menor al pivote, lo intercambiamos ya que debe estar a la izquierda del pivote.
 			intercambiar(v, i, j);
 			i++;
 			intercambios++;
