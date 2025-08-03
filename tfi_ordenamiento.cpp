@@ -110,17 +110,19 @@ void bubbleSort(int v[], int n) {
 	for (int i = 0; i < n-1; i++) { // Iteramos hasta el penultimo valor, ya que debemos comparar con i+1.
 		int desordenado = 0;
 		for (int j = 0; j < n-i-1; j++) { // Usando ifs anidados, evitamos volver a validar valores que ya estan ordenados.
-			if(v[j] > v[j+1]) {			
+		comparaciones++;
+		
+			if(v[j] > v[j+1]) { // Si el numero en j+i es mayor, realizamos el intercambio
 				int aux = v[j];
 				v[j] = v[j+1];
 				v[j+1] = aux;
 				
 				desordenado = 1;
-				comparaciones++;
-				intercambios += 2;
+				intercambios++;
 			}
 		}
-		if (desordenado = 0) {
+		
+		if (desordenado = 0) { // Si el vector se encuentra en orden, cortamos el for antes.
 			break;
 		}
 	}
@@ -133,7 +135,9 @@ void bubbleSort(int v[], int n) {
 void selectionSort(int v[], int n) {
 	int comparaciones = 0, intercambios = 0;
 	for (int i = 0; i < n - 1; i++) {
+		int min = i, aux;
 		for (int j = i + 1; j < n; j++) {
+			comparaciones++;
 			if (v[j] < v[min]) { // Comparamos el elemento actual con el presente en el indice menor y reemplazamos.
 				min = j;
 			}
@@ -143,11 +147,14 @@ void selectionSort(int v[], int n) {
 			aux = v[i];
 			v[i] = v[min];
 			v[min] = aux;
+			intercambios++;
 		}
 	}
 	
 	printf("El vector ordenado es: \n");
 	imprimirVector(v, n);
+	printf("Cantidad de comparaciones: %d.\n", comparaciones);
+	printf("Cantidad de intercambios: %d.\n", intercambios);
 }
 
 void insertionSort(int v[], int n) {
