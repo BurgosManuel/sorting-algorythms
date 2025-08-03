@@ -13,23 +13,31 @@ const char *metodos[] = { // Guardamos los metodos en un arreglo para poder gene
 int cOpciones = 5; // Podriamos obtener la cantiodad de opciones de forma dinamica con sizeof(), pero como sabemos que es estatica, directamente la declararemos.
 int min = 5, max = 25; // Variables globales para controlar la cantidad de elementos minimos y maximos en el vector.
 
-// Prototipo de funciones
+// Prototipo de funciones.
+
+// Flujo del programa.
 void iniciarOrdenamiento();
 void cargarAleatorio(int v[], int &n);
 int elegirMetodo();
 void ejecutarMetodo(int v[], int n, int codMetodo);
 
+// Utilidades.
 void imprimirVector(int v[], int n);
 void imprimirOrdenado(int v[], int n, int comparaciones, int intercambios);
 void intercambiar(int v[], int a, int b);
 
+// Metodos de ordenamiento.
 void bubbleSort(int v[], int n);
 void selectionSort(int v[], int n);
 void insertionSort(int v[], int n);
+
 void mergeSort(int v[], int n);
 void mergeSortRecursion(int v[], int n, int &comparaciones, int &intercambios);
 void mergeSortUnion(int v[], int n, int izq[], int der[], int &comparaciones, int &intercambios);
+
 void quickSort(int v[], int n);
+void quickSortRecursion(int v[], int inicio, int fin, int &comparaciones, int &intercambios);
+int quickSortParticion(int v[], int inicio, int fin, int &comparaciones, int &intercambios);
 
 main() {
 	printf("========== TRABAJO FINAL INTEGRADOR - AyED 2025 ==========\n");
@@ -83,10 +91,10 @@ int elegirMetodo() {
     do {
     	printf("> Seleccione una opcion: ");
     	scanf("%d", &opcion);
-    	if(opcion < 1 || opcion >= cOpciones){
+    	if(opcion < 1 || opcion > cOpciones){
 			printf("El metodo elegido no existe, seleccione uno de la lista.\n");
 		}
-	} while(opcion < 1 || opcion >= cOpciones);
+	} while(opcion < 1 || opcion > cOpciones);
     
 	return opcion - 1;
 }
@@ -281,5 +289,33 @@ void mergeSortUnion(int v[], int n, int izq[], int der[], int &comparaciones, in
 }
 
 void quickSort(int v[], int n) {
-	printf("Ordenado con quickSort\n");
+	int comparaciones = 0, intercambios = 0;
+	quickSortRecursion(v, 0, n - 1, comparaciones, intercambios);
+	imprimirOrdenado(v, n, comparaciones, intercambios);
 }
+
+void quickSortRecursion(int v[], int inicio, int fin, int &comparaciones, int &intercambios) {
+	// Solo ejecutamos si hay varios elementos en el arreglo.
+	if(inicio < fin) {	
+		int pivote = quickSortParticion(v, inicio, fin, comparaciones, intercambios);
+		
+		quickSortRecursion(v, inicio, pivote - 1, comparaciones, intercambios); // Ordenamos la parte izquierda de forma recursiva.
+		quickSortRecursion(v, pivote + 1, fin, comparaciones, intercambios);  // Ordenamos la parte derecha de forma recursiva.
+	}
+}
+
+int quickSortParticion(int v[], int inicio, int fin, int &comparaciones, int &intercambios) {
+	int pivote = v[fin]; // Utilizamos el ultimo elemento del arreglo como nuestro pivote.
+	int i = inicio; // Indice que utilizaremos para ubicar el valor pivote al final de la particion.
+	
+	for (int j = i; j < fin; j++) {
+		if(v[j] <= pivote) { // Si el valor al que apuntamos en v[j] es menor al pivote, intercambiamos ya que debe estar a la izquierda.
+			intercambiar(v, i, j);
+			i++;
+		}
+	}
+	
+	intercambiar(v, i, fin); // Finalmente ubicamos el pivote en la posicion v[i], y moviendo el elemento de v[i] al final.
+	return i; // Devolvemos la posicion del pivote.
+}
+
