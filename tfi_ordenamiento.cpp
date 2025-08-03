@@ -14,10 +14,14 @@ int cOpciones = 5; // Podriamos obtener la cantiodad de opciones de forma dinami
 int min = 5, max = 25; // Variables globales para controlar la cantidad de elementos minimos y maximos en el vector.
 
 // Prototipo de funciones
-int elegirMetodo();
+void iniciarOrdenamiento();
 void cargarAleatorio(int v[], int &n);
-void imprimirVector(int v[], int n);
+int elegirMetodo();
 void ejecutarMetodo(int v[], int n, int codMetodo);
+
+void imprimirVector(int v[], int n);
+void imprimirOrdenado(int v[], int n, int comparaciones, int intercambios);
+void intercambiar(int v[], int a, int b);
 
 void bubbleSort(int v[], int n);
 void selectionSort(int v[], int n);
@@ -27,6 +31,10 @@ void quickSort(int v[], int n);
 
 main() {
 	printf("========== TRABAJO FINAL INTEGRADOR - AyED 2025 ==========\n");
+	iniciarOrdenamiento();	
+}
+
+void iniciarOrdenamiento() {
 	int v[100], n;
 	cargarAleatorio(v, n);
 	
@@ -35,11 +43,21 @@ main() {
 	
 	int codMetodo = elegirMetodo();
 	ejecutarMetodo(v, n, codMetodo);
+	
+    int opcion;
+    printf("> Ordenamiento finalizado. Ingrese 1 para repetir o cualquier tecla para salir: ");
+    scanf("%d", &opcion);
+    printf("\n");
+    
+    if(opcion == 1) {
+    	printf("================================================\n");
+    	iniciarOrdenamiento();
+	}
 }
 
 void cargarAleatorio(int v[], int &n) {
 	do {
-		printf("Ingrese cantidad de elementos para el vector (entre %d y %d):", min, max);
+		printf("> Ingrese cantidad de elementos para el vector (entre %d y %d):", min, max);
 		scanf("%d", &n);
 		if(n < min || n > max) {
 			printf("ERROR: Ingrese un valor entre %d y %d.\n", min, max);
@@ -52,35 +70,23 @@ void cargarAleatorio(int v[], int &n) {
 	}
 }
 
-void imprimirVector(int v[], int n) {
-	printf("[");
-	for (int i = 0; i < n; i++) {
-		// Imprimimos el valor en la misma linea, y si no es el ultimo elemento, agregamos una coma.
-		printf("%d", v[i]);
-		if (i != n - 1) {
-			printf(",")	;
-		}
-	}
-	printf("]\n");
-}
-
 int elegirMetodo() {
 	int opcion;
 	
-	printf("========== METODOS DE ORDENAMIENTO ==========\n");
+	printf("\n========== METODOS DE ORDENAMIENTO ==========\n");
 	for (int i = 0; i < cOpciones; i++) { // Generamos las opciones de forma dinamica.
-		printf("[%d]. %s\n", i, metodos[i]);
+		printf("[%d]. %s\n", i+1, metodos[i]);
 	}
     
     do {
-    	printf("Seleccione una opcion: ");
+    	printf("> Seleccione una opcion: ");
     	scanf("%d", &opcion);
-    	if(opcion < 0 || opcion > 4){
+    	if(opcion < 1 || opcion >= cOpciones){
 			printf("El metodo elegido no existe, seleccione uno de la lista.\n");
 		}
-	} while(opcion < 0 || opcion > 4);
+	} while(opcion < 1 || opcion >= cOpciones);
     
-	return opcion;
+	return opcion - 1;
 }
 
 void ejecutarMetodo(int v[], int n, int codMetodo) {
@@ -105,60 +111,98 @@ void ejecutarMetodo(int v[], int n, int codMetodo) {
     }
 }
 
+void imprimirVector(int v[], int n) {
+	printf("[");
+	for (int i = 0; i < n; i++) {
+		// Imprimimos el valor en la misma linea, y si no es el ultimo elemento, agregamos una coma.
+		printf("%d", v[i]);
+		if (i != n - 1) {
+			printf(",")	;
+		}
+	}
+	printf("]\n");
+}
+
+void imprimirOrdenado(int v[], int n, int comparaciones, int intercambios) {
+	printf("El vector ordenado es: \n");
+	imprimirVector(v, n);
+	printf("Cantidad de comparaciones: %d.\n", comparaciones);
+	printf("Cantidad de intercambios: %d.\n\n", intercambios);
+}
+
+void intercambiar(int v[], int a, int b) {
+	int aux = v[a];
+	v[a] = v[b];
+	v[b] = aux;
+}
+
 void bubbleSort(int v[], int n) {
 	int intercambios = 0, comparaciones = 0;
+	
 	for (int i = 0; i < n-1; i++) { // Iteramos hasta el penultimo valor, ya que debemos comparar con i+1.
 		int desordenado = 0;
+		
 		for (int j = 0; j < n-i-1; j++) { // Usando ifs anidados, evitamos volver a validar valores que ya estan ordenados.
 		comparaciones++;
 		
 			if(v[j] > v[j+1]) { // Si el numero en j+i es mayor, realizamos el intercambio
-				int aux = v[j];
-				v[j] = v[j+1];
-				v[j+1] = aux;
+				intercambiar(v, j, j+1);
 				
-				desordenado = 1;
+				desordenado = 1; // Marcamos que el vector continua desordenado para seguir iterando.
 				intercambios++;
 			}
 		}
 		
-		if (desordenado = 0) { // Si el vector se encuentra en orden, cortamos el for antes.
+		if (desordenado = 0) { // Si el vector se encuentra en orden, cortamos el for para evitar evaluaciones innecesarias.
 			break;
 		}
 	}
-	printf("El vector ordenado es: \n");
-	imprimirVector(v, n);
-	printf("Cantidad de comparaciones: %d.\n", comparaciones);
-	printf("Cantidad de intercambios: %d.\n", intercambios);
+	
+	imprimirOrdenado(v, n, comparaciones, intercambios);
 }
 
 void selectionSort(int v[], int n) {
 	int comparaciones = 0, intercambios = 0;
-	for (int i = 0; i < n - 1; i++) {
-		int min = i, aux;
+	
+	for (int i = 0; i < n - 1; i++) { // Iteramos desde el inicio hasta el penultimo valor, ya que evaluaremos con i+1.
+		int min = i, aux; // Establecemos el indice menor como i al inicio.
+		
 		for (int j = i + 1; j < n; j++) {
 			comparaciones++;
-			if (v[j] < v[min]) { // Comparamos el elemento actual con el presente en el indice menor y reemplazamos.
+			if (v[j] < v[min]) { // Comparamos el elemento actual con el presente en el indice menor y reemplazamos si corresponde.
 				min = j;
 			}
 		}
 		
-		if(min != i) { // Verificamos si corresponde hacer el intercambio
-			aux = v[i];
-			v[i] = v[min];
-			v[min] = aux;
+		if(min != i) { // Verificamos si corresponde hacer el intercambio.
+			intercambiar(v, i, min);
 			intercambios++;
 		}
 	}
 	
-	printf("El vector ordenado es: \n");
-	imprimirVector(v, n);
-	printf("Cantidad de comparaciones: %d.\n", comparaciones);
-	printf("Cantidad de intercambios: %d.\n", intercambios);
+	imprimirOrdenado(v, n, comparaciones, intercambios);
 }
 
 void insertionSort(int v[], int n) {
-	printf("Ordenado con insertionSort\n");
+	int comparaciones = 0, intercambios = 0;
+	
+	for(int i = 1; i < n; i++) { // Como debemos comparar "hacia atras" empezamos en el indice 1, caso contrario estariamos al inicio del vector.
+		int valorEvaluado = v[i];
+		int j = i - 1;
+		
+		// Iteramos de forma descendente desde el valor anterior al evaluado, hasta el inicio del vector, o hasta encontrar un elemento menor o igual al evaluado.
+		while(j >=0 && v[j] > valorEvaluado) {
+			v[j+1] = v[j]; // Si el elemento anterior al evaluado es mayor, lo movemos hacia la derecha.
+			j--;
+			comparaciones++;
+			intercambios++;
+		}
+		
+		intercambios++;
+		v[j+1] = valorEvaluado; // Guardamos el valor evaluado en la posicion que le corresponde.
+	}
+	
+	imprimirOrdenado(v, n, comparaciones, intercambios);
 }
 	
 void mergeSort(int v[], int n) {
