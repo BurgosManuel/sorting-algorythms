@@ -1,5 +1,6 @@
 #include <stdio.h> // Libreria estandar para usar printf() y scanf().
 #include <stdlib.h> // Libreria para hacer uso de la funcion rand().
+#include <time.h> // Libreria utilizada para medir el tiempo de ejecucion de los algoritmos de ordenamiento.
 
 // Variables globales
 const char *metodos[] = { // Guardamos los metodos en un arreglo para poder generar las opciones dinamicamente y acceder a sus valores a traves de un indice.
@@ -11,7 +12,7 @@ const char *metodos[] = { // Guardamos los metodos en un arreglo para poder gene
 };
 
 int cOpciones = 5; // Podriamos obtener la cantiodad de opciones de forma dinamica con sizeof(), pero como sabemos que es estatica, directamente la declararemos.
-int min = 5, max = 25; // Variables globales para controlar la cantidad de elementos minimos y maximos en el vector.
+int min = 5, max = 10000; // Variables globales para controlar la cantidad de elementos minimos y maximos en el vector.
 
 // Prototipo de funciones.
 
@@ -25,6 +26,7 @@ void ejecutarMetodo(int v[], int n, int codMetodo);
 void imprimirVector(int v[], int n);
 void imprimirOrdenado(int v[], int n, int comparaciones, int intercambios);
 void intercambiar(int v[], int a, int b);
+void medirTiempo(void (*func)(int[], int), int v[], int n);
 
 // Metodos de ordenamiento.
 void bubbleSort(int v[], int n);
@@ -45,7 +47,7 @@ main() {
 }
 
 void iniciarOrdenamiento() {
-	int v[100], n;
+	int v[10000], n;
 	cargarAleatorio(v, n);
 	
 	printf("El vector generado es: \n");
@@ -104,19 +106,19 @@ void ejecutarMetodo(int v[], int n, int codMetodo) {
 	
     switch (codMetodo) {
         case 0:
-            bubbleSort(v, n);
+            medirTiempo(bubbleSort, v, n);
             break;
         case 1:
-            selectionSort(v, n);
+        	medirTiempo(selectionSort, v, n);
             break;
         case 2:
-            insertionSort(v, n);
+        	medirTiempo(insertionSort, v, n);
             break;
         case 3:
-            mergeSort(v, n);
+        	medirTiempo(mergeSort, v, n);
             break;
         case 4:
-            quickSort(v, n);
+        	medirTiempo(quickSort, v, n);
             break;
     }
 }
@@ -144,6 +146,17 @@ void intercambiar(int v[], int a, int b) {
 	int aux = v[a];
 	v[a] = v[b];
 	v[b] = aux;
+}
+
+void medirTiempo(void (*func)(int[], int), int v[], int n) {
+	clock_t tic = clock();
+	
+	func(v, n);
+	
+	clock_t toc = clock();
+	double tiempoEjecucion = (double)(toc - tic) / CLOCKS_PER_SEC;
+	
+	printf("Tiempo de ejecucion: %f segundos.\n", tiempoEjecucion);
 }
 
 void bubbleSort(int v[], int n) {
