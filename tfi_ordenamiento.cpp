@@ -26,7 +26,8 @@ void intercambiar(int v[], int a, int b);
 void bubbleSort(int v[], int n);
 void selectionSort(int v[], int n);
 void insertionSort(int v[], int n);
-void mergeSort(int v[], int n);
+void mergeSort(int v[], int n, int &comparaciones, int &intercambios);
+void merge(int v[], int n, int izq[], int der[], int &comparaciones, int &intercambios);
 void quickSort(int v[], int n);
 
 main() {
@@ -91,19 +92,21 @@ int elegirMetodo() {
 
 void ejecutarMetodo(int v[], int n, int codMetodo) {
 	printf("El metodo elegido es: %s.\n", metodos[codMetodo]);
+	int comparaciones = 0, intercambios = 0;
 	
     switch (codMetodo) {
         case 0:
             bubbleSort(v, n);
             break;
-        case 1:
             selectionSort(v, n);
             break;
         case 2:
+        case 1:
             insertionSort(v, n);
             break;
         case 3:
-            mergeSort(v, n);
+            mergeSort(v, n, comparaciones, intercambios);
+            imprimirOrdenado(v, n, comparaciones, intercambios);
             break;
         case 4:
             quickSort(v, n);
@@ -205,9 +208,74 @@ void insertionSort(int v[], int n) {
 	imprimirOrdenado(v, n, comparaciones, intercambios);
 }
 	
-void mergeSort(int v[], int n) {
-	printf("Ordenado con mergeSort\n");
+void mergeSort(int v[], int n, int &comparaciones, int &intercambios) {
+	if(n < 2) { // Si tenemos un vector vacio o con un solo elemento, no necesita ordenarse.
+		return;
+	}
+	
+	int medio = n / 2; // Obtenemos el medio del vector, si el numero es impar, se redondea para abajo. EJ: 5/2 = 2.
+	// Generamos dos vectores, donde copiaremos los valores a la izquierda y a la derecha respecto al medio del vector original.
+	int izq[medio];
+	int der[n - medio];
+	
+	for(int i = 0; i < medio; i++) {
+		// Tomamos los elementos del vector original desde el inicio hasta el medio.
+		izq[i] = v[i];
+	}
+	
+	for (int i = medio; i < n; i++) {
+		// Tomamos los elementos desde el medio en adelante. Hacemos i-medio para colocar los elementos al inicio de der[].
+		der[i - medio] = v[i];
+	}
+
+	// Ordenamos cada mitad de manera recursiva.
+	mergeSort(izq, medio, comparaciones, intercambios);
+	mergeSort(der, n-medio, comparaciones, intercambios);
+	
+	// Unimos las mitades ordenadas en el vector principal.
+	merge(v, n, izq, der, comparaciones, intercambios);
 }
+
+void merge(int v[], int n, int izq[], int der[], int &comparaciones, int &intercambios){
+	int medio = n / 2;
+	int nIzq = medio;
+	int nDer = n - medio;
+	
+	int i=0,j=0,k=0;
+	
+	// Iteramos hasta quedarnos sin elementos en alguno de los vectores.
+	// i -> para izquierda. j -> para derecha. k -> vector original.
+	while (i < nIzq && j < nDer) {
+		comparaciones++;
+		if(izq[i] <= der[j]) {
+			v[k] = izq[i];
+			intercambios++;
+			i++;
+		} else {
+			v[k] = der[j];
+			intercambios++;
+			j++;
+		}
+		k++;
+	}
+	
+	// Agregamos los elementos que quedaron en alguno de los vectores.
+	
+	while (i < nIzq) {
+		v[k] = izq[i];
+		i++;
+		k++;
+		intercambios++;
+	}
+	
+	while (j < nDer) {
+		v[k] = der[j];
+		j++;
+		k++;
+		intercambios++;
+	}
+}
+
 void quickSort(int v[], int n) {
 	printf("Ordenado con quickSort\n");
 }
